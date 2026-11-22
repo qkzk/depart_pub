@@ -6,11 +6,12 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-val localProperties = java.util.Properties().apply {
-    val f = rootProject.file("local.properties")
-    if (f.exists()) f.inputStream().use { load(it) }
-}
-val googleMapsApiKey: String = localProperties.getProperty("googleMapsApiKey") ?: ""
+val propFile = rootProject.file("local.properties")
+val googleMapsApiKey: String = if (propFile.exists()) {
+    propFile.readLines()
+        .firstOrNull { it.trim().startsWith("googleMapsApiKey=") }
+        ?.substringAfter('=')?.trim() ?: ""
+} else ""
 
 android {
     namespace = "com.example.depart_pub"
@@ -36,7 +37,7 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        manifestPlaceholders["googleMapsApiKey"] = localProperties.getProperty("googleMapsApiKey") ?: ""
+        manifestPlaceholders["googleMapsApiKey"] = googleMapsApiKey
     }
 
     buildTypes {
