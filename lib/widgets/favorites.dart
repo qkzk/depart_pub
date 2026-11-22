@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:depart/data/data.dart';
@@ -56,57 +57,57 @@ class VersionTileState extends State<VersionTile> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _infoTile(_packageInfo.appName, 'Version :', _packageInfo.version),
-          ]),
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          _infoTile(_packageInfo.appName, 'Version :', _packageInfo.version),
+        ],
+      ),
     );
   }
 }
 
 void showFavoritesDialog(
-    BuildContext context, StreamController<dynamic> animationCardNotifier) {
+  BuildContext context,
+  StreamController<dynamic> animationCardNotifier,
+) {
   const String favoriteTitle = 'Trajets Favoris';
   showDialog(
-      context: context,
-      builder: (context) {
-        final notifierJourney =
-            Provider.of<JourneyNotifier>(context, listen: false);
+    context: context,
+    builder: (context) {
+      final notifierJourney = Provider.of<JourneyNotifier>(
+        context,
+        listen: false,
+      );
 
-        return SimpleDialog(
-          backgroundColor: Theme.of(context).primaryColor,
-          title: const Text(favoriteTitle),
-          children: <Widget>[
-            buildOptionTrajetFavoriEnregistre(
-              context,
-              notifierJourney,
-            ),
-            buildOptionTrajeFavoriCharge(
-              context,
-              animationCardNotifier,
-            ),
-            buildOptionColor(
-              context,
-              MyThemeKeys.pink,
-              MyThemes.pinkTheme as ThemeData,
-              "Pink",
-            ),
-            buildOptionColor(
-              context,
-              MyThemeKeys.green,
-              MyThemes.greenTheme as ThemeData,
-              "Green",
-            ),
-            buildOptionColor(
-              context,
-              MyThemeKeys.blue,
-              MyThemes.blueTheme as ThemeData,
-              "Blue",
-            ),
-            const VersionTile(),
-          ],
-        );
-      });
+      return SimpleDialog(
+        backgroundColor: Theme.of(context).primaryColor,
+        title: const Text(favoriteTitle),
+        children: <Widget>[
+          buildOptionTrajetFavoriEnregistre(context, notifierJourney),
+          buildOptionTrajeFavoriCharge(context, animationCardNotifier),
+          buildOptionColor(
+            context,
+            MyThemeKeys.pink,
+            MyThemes.pinkTheme as ThemeData,
+            "Pink",
+          ),
+          buildOptionColor(
+            context,
+            MyThemeKeys.green,
+            MyThemes.greenTheme as ThemeData,
+            "Green",
+          ),
+          buildOptionColor(
+            context,
+            MyThemeKeys.blue,
+            MyThemes.blueTheme as ThemeData,
+            "Blue",
+          ),
+          const VersionTile(),
+        ],
+      );
+    },
+  );
 }
 
 SimpleDialogOption buildOptionColor(
@@ -122,9 +123,7 @@ SimpleDialogOption buildOptionColor(
       favoriteSnackbar(context, themeCharge, theme: theme);
       Navigator.pop(context);
     },
-    child: ChangeTheme(
-      colorString: colorString,
-    ),
+    child: ChangeTheme(colorString: colorString),
   );
 }
 
@@ -135,13 +134,16 @@ SimpleDialogOption buildOptionTrajeFavoriCharge(
   const String trajetFavoriCharge = 'Destinations favorites chargées';
   const String chargerTrajetFavori = "Charger le trajet favori";
   return SimpleDialogOption(
-      onPressed: () {
-        loadFavoritesDestination(context, animationCardNotifier);
-        favoriteSnackbar(context, trajetFavoriCharge);
-        Navigator.pop(context);
-      },
-      child: const RowDialog(
-          text: chargerTrajetFavori, icon: Icons.open_in_browser));
+    onPressed: () {
+      loadFavoritesDestination(context, animationCardNotifier);
+      favoriteSnackbar(context, trajetFavoriCharge);
+      Navigator.pop(context);
+    },
+    child: const RowDialog(
+      text: chargerTrajetFavori,
+      icon: Icons.open_in_browser,
+    ),
+  );
 }
 
 Visibility buildOptionTrajetFavoriEnregistre(
@@ -159,8 +161,10 @@ Visibility buildOptionTrajetFavoriEnregistre(
         favoriteSnackbar(context, trajetFavoriEnregistre);
         Navigator.pop(context);
       },
-      child:
-          const RowDialog(text: enregistrerTrajetFavori, icon: Icons.save_alt),
+      child: const RowDialog(
+        text: enregistrerTrajetFavori,
+        icon: Icons.save_alt,
+      ),
     ),
   );
 }
@@ -177,9 +181,7 @@ class RowDialog extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Icon(icon),
-        const Padding(
-          padding: EdgeInsets.all(12),
-        ),
+        const Padding(padding: EdgeInsets.all(12)),
         Text(text!),
       ],
     );
@@ -188,10 +190,7 @@ class RowDialog extends StatelessWidget {
 
 class ChangeTheme extends StatelessWidget {
   final String colorString;
-  const ChangeTheme({
-    Key? key,
-    required this.colorString,
-  }) : super(key: key);
+  const ChangeTheme({Key? key, required this.colorString}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -262,14 +261,18 @@ String setThemeString(MyThemeKeys myThemeKey) {
 }
 
 void favoriteSnackbar(BuildContext context, String text, {ThemeData? theme}) {
-  Color backgroundColor =
-      (theme == null) ? Theme.of(context).hoverColor : theme.hoverColor;
-  Color primaryColor =
-      (theme == null) ? Theme.of(context).primaryColor : theme.primaryColor;
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    backgroundColor: backgroundColor,
-    content: Text(text, style: TextStyle(color: primaryColor)),
-  ));
+  Color backgroundColor = (theme == null)
+      ? Theme.of(context).hoverColor
+      : theme.hoverColor;
+  Color primaryColor = (theme == null)
+      ? Theme.of(context).primaryColor
+      : theme.primaryColor;
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: backgroundColor,
+      content: Text(text, style: TextStyle(color: primaryColor)),
+    ),
+  );
 }
 
 String getNameOrEmpty(Station? station) {
@@ -309,9 +312,7 @@ void saveDestinations(BuildContext context) async {
   }
 }
 
-void loadTheme(
-  BuildContext context,
-) async {
+void loadTheme(BuildContext context) async {
   final prefs = await SharedPreferences.getInstance();
 
   String? myThemeString = prefs.getString("myThemeKey");
@@ -335,8 +336,10 @@ MyThemeKeys setMyThemeKey(String? myThemeString) {
   return myThemeKey;
 }
 
-void loadFavoritesDestination(BuildContext context,
-    StreamController<dynamic> animationCardNotifier) async {
+void loadFavoritesDestination(
+  BuildContext context,
+  StreamController<dynamic> animationCardNotifier,
+) async {
   final prefs = await SharedPreferences.getInstance();
   if (!context.mounted) return;
   final notifierJourney = Provider.of<JourneyNotifier>(context, listen: false);
@@ -363,18 +366,16 @@ void loadFavoritesDestination(BuildContext context,
 }
 
 void executeLoadPrefs(
-    String? departureID,
-    String? departureName,
-    String? arrivalID,
-    String? arrivalName,
-    JourneyNotifier notifierJourney,
-    StreamController animationCardNotifier,
-    DateTimeNotifier notifierDT,
-    AppStateNotifier notifierState) {
-  Station departureStationPref = Station(
-    id: departureID,
-    name: departureName,
-  );
+  String? departureID,
+  String? departureName,
+  String? arrivalID,
+  String? arrivalName,
+  JourneyNotifier notifierJourney,
+  StreamController animationCardNotifier,
+  DateTimeNotifier notifierDT,
+  AppStateNotifier notifierState,
+) {
+  Station departureStationPref = Station(id: departureID, name: departureName);
   Station arrivalStationPref = Station(id: arrivalID, name: arrivalName);
   if (kDebugMode) {
     print("loaded from prefs : departureName $departureName");
@@ -388,8 +389,12 @@ void executeLoadPrefs(
   fetchJourneyWithCurrentSettings(notifierJourney, notifierDT, notifierState);
 }
 
-bool isLoadPrefsComplete(String? departureName, String? arrivalName,
-    String? departureID, String? arrivalID) {
+bool isLoadPrefsComplete(
+  String? departureName,
+  String? arrivalName,
+  String? departureID,
+  String? arrivalID,
+) {
   return departureName != '' &&
       arrivalName != '' &&
       departureID != '' &&

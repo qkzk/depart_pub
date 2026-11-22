@@ -6,13 +6,13 @@ import FlutterMacOS
 import Foundation
 
 import flutter_local_notifications
-import package_info
+import package_info_plus
 import shared_preferences_foundation
 import workmanager_apple
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   FlutterLocalNotificationsPlugin.register(with: registry.registrar(forPlugin: "FlutterLocalNotificationsPlugin"))
-  FLTPackageInfoPlugin.register(with: registry.registrar(forPlugin: "FLTPackageInfoPlugin"))
+  FPPPackageInfoPlusPlugin.register(with: registry.registrar(forPlugin: "FPPPackageInfoPlusPlugin"))
   SharedPreferencesPlugin.register(with: registry.registrar(forPlugin: "SharedPreferencesPlugin"))
   WorkmanagerPlugin.register(with: registry.registrar(forPlugin: "WorkmanagerPlugin"))
 }
