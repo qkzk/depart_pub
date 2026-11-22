@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
@@ -108,8 +109,9 @@ bool parseBodyForDisruption(String body) {
 }
 
 Future<void> notifyDisruption(String journeyString, String motif) async {
-  final data.FollowedJourney journey =
-      data.FollowedJourney.decode(journeyString);
+  final data.FollowedJourney journey = data.FollowedJourney.decode(
+    journeyString,
+  );
   final String title = "Retard: ${journey.format()}";
   final String body = "Motif: $motif";
   await notifier(title, body, journeyString);
@@ -128,17 +130,20 @@ void notificationResponseWTF(NotificationResponse notification) async {
 }
 
 void onDidReceiveNotificationResponse(
-    int id, String? title, String? body, String? payload) async {
+  int id,
+  String? title,
+  String? body,
+  String? payload,
+) async {
   if (payload != null) {
     fetchThisClickedJourney(payload);
   }
 }
 
-void fetchThisClickedJourney(
-  String journeyString,
-) {
-  final data.FollowedJourney followedJourney =
-      data.FollowedJourney.decode(journeyString);
+void fetchThisClickedJourney(String journeyString) {
+  final data.FollowedJourney followedJourney = data.FollowedJourney.decode(
+    journeyString,
+  );
   final BuildContext context =
       main.NavigationService.navigatorKey.currentContext!;
   final models.JourneyNotifier notifierJourney =
@@ -148,10 +153,10 @@ void fetchThisClickedJourney(
 
 Future<void> notifier(String title, String body, String journeyString) async {
   await main.localNotification.show(
-    0,
-    title,
-    body,
-    main.platformChannelSpecifics,
+    id: 0,
+    title: title,
+    body: body,
+    // main.platformChannelSpecifics,
     payload: journeyString,
   );
   return Future.value();

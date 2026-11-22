@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_localizations/flutter_localizations.dart'
@@ -28,9 +29,9 @@ void main() async {
 
   follow.clearOldFollowed();
 
-  localNotification.initialize(initializationSettings,
-      // onSelectNotification: follow.onSelectNotification
-      onDidReceiveNotificationResponse: follow.notificationResponseWTF);
+  // localNotification.initialize(initializationSettings,
+  // onSelectNotification: follow.onSelectNotification
+  //    onDidReceiveNotificationResponse: follow.notificationResponseWTF);
 
   final NotificationAppLaunchDetails? notificationAppLaunchDetails =
       await localNotification.getNotificationAppLaunchDetails();
@@ -41,10 +42,7 @@ void main() async {
   initalizeWorkmanager();
 
   runApp(
-    CustomTheme(
-      initialThemeKey: MyThemeKeys.blue,
-      child: DepartApp(payload),
-    ),
+    CustomTheme(initialThemeKey: MyThemeKeys.blue, child: DepartApp(payload)),
   );
 }
 
@@ -56,20 +54,21 @@ const AndroidInitializationSettings initializationSettingsAndroid =
 
 const AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails(
-  '1',
-  'depart',
-  channelDescription: 'depart channel description',
-  importance: Importance.max,
-  priority: Priority.high,
-  ticker: 'ticker',
-  ledColor: Color(0xff813961),
-  ledOffMs: 1000,
-  ledOnMs: 1000,
-  enableLights: true,
-);
+      '1',
+      'depart',
+      channelDescription: 'depart channel description',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+      ledColor: Color(0xff813961),
+      ledOffMs: 1000,
+      ledOnMs: 1000,
+      enableLights: true,
+    );
 
-const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
+const NotificationDetails platformChannelSpecifics = NotificationDetails(
+  android: androidPlatformChannelSpecifics,
+);
 
 const InitializationSettings initializationSettings = InitializationSettings(
   android: initializationSettingsAndroid,
@@ -119,21 +118,11 @@ class DepartAppState extends State<DepartApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => JourneyNotifier(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => AppStateNotifier(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => DateTimeNotifier(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ScheduleNotifier(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => FollowNotifier(),
-        ),
+        ChangeNotifierProvider(create: (_) => JourneyNotifier()),
+        ChangeNotifierProvider(create: (_) => AppStateNotifier()),
+        ChangeNotifierProvider(create: (_) => DateTimeNotifier()),
+        ChangeNotifierProvider(create: (_) => ScheduleNotifier()),
+        ChangeNotifierProvider(create: (_) => FollowNotifier()),
       ],
       child: buildMainMaterialApp(context),
     );
@@ -141,22 +130,23 @@ class DepartAppState extends State<DepartApp> {
 
   MaterialApp buildMainMaterialApp(BuildContext context) {
     return MaterialApp(
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-        ],
-        supportedLocales: const [Locale('fr')],
-        title: "Départ",
-        initialRoute: '/',
-        routes: {
-          '/': (context) =>
-              DepartTransportPage(animationCardNotifier, widget.payload),
-          '/map': (context) => const map.MapRoute(),
-          '/schedule': (context) => const ScheduleRoute(),
-        },
-        debugShowCheckedModeBanner: false,
-        theme: CustomTheme.of(context),
-        navigatorKey: NavigationService.navigatorKey);
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('fr')],
+      title: "Départ",
+      initialRoute: '/',
+      routes: {
+        '/': (context) =>
+            DepartTransportPage(animationCardNotifier, widget.payload),
+        '/map': (context) => const map.MapRoute(),
+        '/schedule': (context) => const ScheduleRoute(),
+      },
+      debugShowCheckedModeBanner: false,
+      theme: CustomTheme.of(context),
+      navigatorKey: NavigationService.navigatorKey,
+    );
   }
 }
 
@@ -167,8 +157,11 @@ class NavigationService {
 class DepartTransportPage extends StatefulWidget {
   final String? payload;
   final StreamController<dynamic> animationCardNotifier;
-  const DepartTransportPage(this.animationCardNotifier, this.payload,
-      {super.key});
+  const DepartTransportPage(
+    this.animationCardNotifier,
+    this.payload, {
+    super.key,
+  });
   @override
   createState() => DepartTransportPageState();
 }
@@ -188,8 +181,10 @@ class DepartTransportPageState extends State<DepartTransportPage> {
 
   @override
   Widget build(BuildContext context) {
-    DateTimeNotifier notifierDT =
-        Provider.of<DateTimeNotifier>(context, listen: false);
+    DateTimeNotifier notifierDT = Provider.of<DateTimeNotifier>(
+      context,
+      listen: false,
+    );
     refresh() {
       setState(() {
         notifierDT = Provider.of<DateTimeNotifier>(context, listen: false);
@@ -197,8 +192,10 @@ class DepartTransportPageState extends State<DepartTransportPage> {
     }
 
     AppStateNotifier notifierState = Provider.of<AppStateNotifier>(context);
-    JourneyNotifier notifierJourney =
-        Provider.of<JourneyNotifier>(context, listen: false);
+    JourneyNotifier notifierJourney = Provider.of<JourneyNotifier>(
+      context,
+      listen: false,
+    );
     loadOnceFromPayload();
 
     return RefreshIndicator(
@@ -206,7 +203,10 @@ class DepartTransportPageState extends State<DepartTransportPage> {
       onRefresh: () async {
         widget.animationCardNotifier.sink.add(null);
         fetchJourneyWithCurrentSettings(
-            notifierJourney, notifierDT, notifierState);
+          notifierJourney,
+          notifierDT,
+          notifierState,
+        );
       },
       child: Scaffold(
         key: scaffoldKey,
@@ -248,20 +248,22 @@ class DepartTransportPageState extends State<DepartTransportPage> {
 
   SingleChildScrollView buildMainView(Function() refresh) {
     return SingleChildScrollView(
-      child: Column(children: [
-        const Origin(),
-        const Destination(),
-        ThirdRow([
-          SwitchArrivalDeparture(widget.animationCardNotifier),
-          SearchTypeSwitcher(widget.animationCardNotifier),
-          ArrivalTimePicker(widget.animationCardNotifier),
-          ResetTimePicker(widget.animationCardNotifier),
-        ]),
-        FadeJourneyPanel(
-          shouldTriggerChange: widget.animationCardNotifier.stream,
-          notifyParent: refresh,
-        ),
-      ]),
+      child: Column(
+        children: [
+          const Origin(),
+          const Destination(),
+          ThirdRow([
+            SwitchArrivalDeparture(widget.animationCardNotifier),
+            SearchTypeSwitcher(widget.animationCardNotifier),
+            ArrivalTimePicker(widget.animationCardNotifier),
+            ResetTimePicker(widget.animationCardNotifier),
+          ]),
+          FadeJourneyPanel(
+            shouldTriggerChange: widget.animationCardNotifier.stream,
+            notifyParent: refresh,
+          ),
+        ],
+      ),
     );
   }
 }
