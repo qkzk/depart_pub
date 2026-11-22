@@ -34,6 +34,7 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["googleMapsApiKey"] = localProperties.getProperty("googleMapsApiKey") ?: ""
     }
 
     buildTypes {
