@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -8,7 +10,7 @@ val localProperties = java.util.Properties().apply {
     val f = rootProject.file("local.properties")
     if (f.exists()) f.inputStream().use { load(it) }
 }
-
+val googleMapsApiKey: String = localProperties.getProperty("googleMapsApiKey") ?: ""
 
 android {
     namespace = "com.example.depart_pub"
