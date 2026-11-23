@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_localizations/flutter_localizations.dart'
-    hide GlobalMaterialLocalizations;
+    as localisation;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -132,7 +132,7 @@ class DepartAppState extends State<DepartApp> {
     return MaterialApp(
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
+        localisation.GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: const [Locale('fr')],
       title: "Départ",
