@@ -824,6 +824,7 @@ class ArrivalTimePicker extends StatelessWidget {
           DateTime today = DateTime.now();
 
           showDatePicker(
+            locale: const Locale('fr', 'FR'),
             context: context,
             firstDate: DateTime(today.year - 1, today.month, today.day),
             initialDate: today,
