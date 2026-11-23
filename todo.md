@@ -9,6 +9,6 @@
 - [x] FIX: time & date : wrong background colors
 - [x] FIX: setting a time & date crash - can't reproduce
 - [x] FIX: train button crash - can't reproduce
-- [ ] BUG: followed journey display crash "needs ancestor whatever"
+- [x] FIX: followed journey display crash
 - [ ] BUG: horaires pour le trajet : pixel overflow
 - [ ] BUG: map won't load

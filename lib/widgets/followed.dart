@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
@@ -15,8 +16,10 @@ Future<bool> clearSharedPrefs() async {
   return await prefs.clear();
 }
 
-void showFollowedJourney(BuildContext context,
-    StreamController<dynamic> animationCardNotifier) async {
+void showFollowedJourney(
+  BuildContext context,
+  StreamController<dynamic> animationCardNotifier,
+) async {
   final notifierJourney = Provider.of<JourneyNotifier>(context, listen: false);
   final notifierDT = Provider.of<DateTimeNotifier>(context, listen: false);
   final notifierState = Provider.of<AppStateNotifier>(context, listen: false);
@@ -25,10 +28,10 @@ void showFollowedJourney(BuildContext context,
   await prefs.reload();
   if (!context.mounted) return;
   showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
           final widgets = createFollowedJourneyWidget(
             context,
             animationCardNotifier,
@@ -44,8 +47,10 @@ void showFollowedJourney(BuildContext context,
             title: const Text(followedTitle),
             children: widgets,
           );
-        });
-      });
+        },
+      );
+    },
+  );
 }
 
 List<Widget>? createFollowedJourneyWidget(
@@ -60,19 +65,36 @@ List<Widget>? createFollowedJourneyWidget(
 ) {
   List<String>? journeyStringList = prefs.getStringList("followedJourney");
   // print("createFollowedJourneyWidget $journeyStringList");
-  List<FollowedJourney> journeys = (journeyStringList != null)
-      ? journeyStringList.map((item) => FollowedJourney.decode(item)).toList()
-      : [];
+  List<FollowedJourney> journeys = [];
+  final errs = <String>[];
+  for (final item in (journeyStringList ?? const [])) {
+    try {
+      journeys.add(FollowedJourney.decode(item));
+    } catch (e, s) {
+      debugPrint('DECODE FAIL: $e\n$s');
+      errs.add(item);
+    }
+  }
+  // optionnel : purger les entrées cassées
+  if (errs.isNotEmpty) {
+    prefs.setStringList(
+      "followedJourney",
+      journeyStringList!.where((i) => !errs.contains(i)).toList(),
+    );
+    notifierFollow.unsetHasFollowedJourney();
+  }
   List<FollowedWidget>? widgets = journeys
-      .map((followedJourney) => FollowedWidget(
-            followedJourney: followedJourney,
-            notifierJourney: notifierJourney,
-            notifierDT: notifierDT,
-            notifierState: notifierState,
-            notifierFollow: notifierFollow,
-            animationCardNotifier: animationCardNotifier,
-            setState: setState,
-          ))
+      .map(
+        (followedJourney) => FollowedWidget(
+          followedJourney: followedJourney,
+          notifierJourney: notifierJourney,
+          notifierDT: notifierDT,
+          notifierState: notifierState,
+          notifierFollow: notifierFollow,
+          animationCardNotifier: animationCardNotifier,
+          setState: setState,
+        ),
+      )
       .toList();
   return widgets;
 }
@@ -110,15 +132,16 @@ class FollowedWidget extends StatelessWidget {
             onPressed: () {
               remove();
               SharedPreferences.getInstance().then((prefs) {
-                List<String>? journeyStringList =
-                    prefs.getStringList("followedJourney");
+                List<String>? journeyStringList = prefs.getStringList(
+                  "followedJourney",
+                );
                 if (journeyStringList == null || journeyStringList.isEmpty) {
                   notifierFollow.unsetHasFollowedJourney();
                 }
               });
             },
             icon: const Icon(Icons.cancel),
-          )
+          ),
         ],
       ),
     );
@@ -127,8 +150,9 @@ class FollowedWidget extends StatelessWidget {
   void remove() {
     SharedPreferences.getInstance().then((prefs) {
       List<String>? journeyStringList = prefs.getStringList("followedJourney");
-      journeyStringList
-          ?.removeWhere((element) => element == followedJourney?.encode());
+      journeyStringList?.removeWhere(
+        (element) => element == followedJourney?.encode(),
+      );
       prefs.setStringList("followedJourney", journeyStringList!);
       setState(() {});
     });
