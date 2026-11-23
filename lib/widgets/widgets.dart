@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,8 +26,9 @@ class BarWithBackground extends StatelessWidget {
     final String backgroundImage = switchBackgroundImage(backgroundColor);
 
     return TopBar(
-        animationCardNotifier: animationCardNotifier,
-        backgroundImage: backgroundImage);
+      animationCardNotifier: animationCardNotifier,
+      backgroundImage: backgroundImage,
+    );
   }
 
   String pickThemeColor(Color color) {
@@ -45,8 +47,8 @@ class TopBar extends StatelessWidget {
     Key? key,
     required this.animationCardNotifier,
     required String backgroundImage,
-  })  : _backgroundImage = backgroundImage,
-        super(key: key);
+  }) : _backgroundImage = backgroundImage,
+       super(key: key);
 
   final StreamController animationCardNotifier;
   final String _backgroundImage;
@@ -99,10 +101,8 @@ class TopBar extends StatelessWidget {
 class ButtonFollowedTrains extends StatelessWidget {
   final StreamController<dynamic> animationCardNotifier;
 
-  const ButtonFollowedTrains(
-    Key? key,
-    this.animationCardNotifier,
-  ) : super(key: key);
+  const ButtonFollowedTrains(Key? key, this.animationCardNotifier)
+    : super(key: key);
   @override
   Widget build(BuildContext context) {
     final notifierFollow = Provider.of<FollowNotifier>(context, listen: true);
@@ -120,21 +120,20 @@ class ButtonFollowedTrains extends StatelessWidget {
     return Visibility(
       visible: notifierFollow.getHasFollowedJourneys,
       child: InkWell(
-          onTap: () {
-            if (kDebugMode) {
-              print("pressed follow");
-            }
-            showFollowedJourney(context, animationCardNotifier);
-          },
-          onLongPress: () {
-            if (kDebugMode) {
-              print("clear shared prefs");
-            }
-            clearSharedPrefs();
-          },
-          child: Ink(
-            child: const Icon(Icons.follow_the_signs, size: 30),
-          )),
+        onTap: () {
+          if (kDebugMode) {
+            print("pressed follow");
+          }
+          showFollowedJourney(context, animationCardNotifier);
+        },
+        onLongPress: () {
+          if (kDebugMode) {
+            print("clear shared prefs");
+          }
+          clearSharedPrefs();
+        },
+        child: Ink(child: const Icon(Icons.follow_the_signs, size: 30)),
+      ),
     );
   }
 }
@@ -211,21 +210,31 @@ class ButtonSearchTrain extends StatelessWidget {
   const ButtonSearchTrain(this.animationCardNotifier, {super.key});
   @override
   Widget build(BuildContext context) {
-    final JourneyNotifier notifierJourney =
-        Provider.of<JourneyNotifier>(context, listen: false);
-    final AppStateNotifier notifierState =
-        Provider.of<AppStateNotifier>(context);
-    final DateTimeNotifier notifierDT =
-        Provider.of<DateTimeNotifier>(context, listen: false);
+    final JourneyNotifier notifierJourney = Provider.of<JourneyNotifier>(
+      context,
+      listen: false,
+    );
+    final AppStateNotifier notifierState = Provider.of<AppStateNotifier>(
+      context,
+    );
+    final DateTimeNotifier notifierDT = Provider.of<DateTimeNotifier>(
+      context,
+      listen: false,
+    );
     return buildIconButtonSearchTrain(
-        notifierJourney, context, notifierDT, notifierState);
+      notifierJourney,
+      context,
+      notifierDT,
+      notifierState,
+    );
   }
 
   IconButton buildIconButtonSearchTrain(
-      JourneyNotifier notifierJourney,
-      BuildContext context,
-      DateTimeNotifier notifierDT,
-      AppStateNotifier notifierState) {
+    JourneyNotifier notifierJourney,
+    BuildContext context,
+    DateTimeNotifier notifierDT,
+    AppStateNotifier notifierState,
+  ) {
     return IconButton(
       onPressed: () {
         if (notifierJourney.journeys != null) {
@@ -245,57 +254,64 @@ class ButtonSearchTrain extends StatelessWidget {
 }
 
 class ButtonFavorite extends StatelessWidget {
-  const ButtonFavorite({
-    Key? key,
-    required this.animationCardNotifier,
-  }) : super(key: key);
+  const ButtonFavorite({Key? key, required this.animationCardNotifier})
+    : super(key: key);
 
   final StreamController animationCardNotifier;
 
   @override
   Widget build(BuildContext context) {
-    return Builder(builder: (BuildContext context) {
-      return IconButton(
-        icon: const Icon(Icons.favorite, size: 30),
-        onPressed: () {
-          showFavoritesDialog(context, animationCardNotifier);
-        },
-      );
-    });
+    return Builder(
+      builder: (BuildContext context) {
+        return IconButton(
+          icon: const Icon(Icons.favorite, size: 30),
+          onPressed: () {
+            showFavoritesDialog(context, animationCardNotifier);
+          },
+        );
+      },
+    );
   }
 }
 
 class ButtonTitle extends StatelessWidget {
   final StreamController<dynamic> animationCardNotifier;
   final double size;
-  const ButtonTitle(
-    this.animationCardNotifier, {
-    this.size = 50,
-    Key? key,
-  }) : super(key: key);
+  const ButtonTitle(this.animationCardNotifier, {this.size = 50, Key? key})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final notifierJourney =
-        Provider.of<JourneyNotifier>(context, listen: false);
+    final notifierJourney = Provider.of<JourneyNotifier>(
+      context,
+      listen: false,
+    );
     final notifierDT = Provider.of<DateTimeNotifier>(context, listen: false);
     final notifierState = Provider.of<AppStateNotifier>(context);
     return buildTextButtonMainTitle(
-        notifierJourney, context, notifierDT, notifierState);
+      notifierJourney,
+      context,
+      notifierDT,
+      notifierState,
+    );
   }
 
   TextButton buildTextButtonMainTitle(
-      JourneyNotifier notifierJourney,
-      BuildContext context,
-      DateTimeNotifier notifierDT,
-      AppStateNotifier notifierState) {
+    JourneyNotifier notifierJourney,
+    BuildContext context,
+    DateTimeNotifier notifierDT,
+    AppStateNotifier notifierState,
+  ) {
     return TextButton(
       onPressed: () {
         if (notifierJourney.journeys != null) {
           notifierJourney.fetchJourneysFromUrl("curr", context);
         } else {
           fetchJourneyWithCurrentSettings(
-              notifierJourney, notifierDT, notifierState);
+            notifierJourney,
+            notifierDT,
+            notifierState,
+          );
         }
         animationCardNotifier.sink.add(null);
       },
@@ -353,36 +369,35 @@ class OriginState extends State<Origin> {
   Widget build(BuildContext context) {
     final notifier = Provider.of<JourneyNotifier>(context, listen: true);
     String? originString;
-    originString =
-        notifier.departure != null ? notifier.departure!.name : originNamePrefs;
+    originString = notifier.departure != null
+        ? notifier.departure!.name
+        : originNamePrefs;
     originString = (originString == null) ? "Depuis" : originString;
     context.watch<JourneyNotifier>();
     return Material(
       color: Theme.of(context).primaryColor,
       child: InkWell(
-          child: OriginText(originString: originString),
-          onTap: () {
-            if (kDebugMode) {
-              print("Origin");
-            }
-            notifier.searchType = SearchType.origin;
-            showPlacesSearch(context).then((place) {
-              notifier.departure = place;
-              notifier.fetchJourneys(
-                searchDateTime: '',
-                requestType: "departure",
-              );
-            });
-          }),
+        child: OriginText(originString: originString),
+        onTap: () {
+          if (kDebugMode) {
+            print("Origin");
+          }
+          notifier.searchType = SearchType.origin;
+          showPlacesSearch(context).then((place) {
+            notifier.departure = place;
+            notifier.fetchJourneys(
+              searchDateTime: '',
+              requestType: "departure",
+            );
+          });
+        },
+      ),
     );
   }
 }
 
 class OriginText extends StatelessWidget {
-  const OriginText({
-    Key? key,
-    required this.originString,
-  }) : super(key: key);
+  const OriginText({Key? key, required this.originString}) : super(key: key);
 
   final String? originString;
 
@@ -419,8 +434,10 @@ class DestinationState extends State<Destination> {
   void _loadDestination() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (!context.mounted) return;
-    final notifierJourney =
-        Provider.of<JourneyNotifier>(context, listen: false);
+    final notifierJourney = Provider.of<JourneyNotifier>(
+      context,
+      listen: false,
+    );
     final notifierDT = Provider.of<DateTimeNotifier>(context, listen: false);
     final notifierState = Provider.of<AppStateNotifier>(context, listen: false);
     setState(() {
@@ -431,8 +448,10 @@ class DestinationState extends State<Destination> {
       arrivalIdPrefs = prefs.getString('arrival.id');
 
       if (arrivalIdPrefs != null) {
-        arrivalStationPref =
-            Station(id: arrivalIdPrefs, name: arrivalNamePrefs);
+        arrivalStationPref = Station(
+          id: arrivalIdPrefs,
+          name: arrivalNamePrefs,
+        );
         notifierJourney.arrival = arrivalStationPref;
       }
       if (prefs.getString('arrival.name') != null) {
@@ -440,7 +459,10 @@ class DestinationState extends State<Destination> {
           print("departure _ state loadDestination : $arrivalNamePrefs");
         }
         fetchJourneyWithCurrentSettings(
-            notifierJourney, notifierDT, notifierState);
+          notifierJourney,
+          notifierDT,
+          notifierState,
+        );
       }
     });
   }
@@ -449,17 +471,19 @@ class DestinationState extends State<Destination> {
   Widget build(BuildContext context) {
     final notifier = Provider.of<JourneyNotifier>(context, listen: true);
     String? arrivalString;
-    arrivalString =
-        (notifier.arrival != null) ? notifier.arrival!.name : arrivalNamePrefs;
+    arrivalString = (notifier.arrival != null)
+        ? notifier.arrival!.name
+        : arrivalNamePrefs;
     arrivalString = (arrivalString == null) ? "Vers" : arrivalString;
     context.watch<JourneyNotifier>();
     return Material(
       color: Theme.of(context).primaryColor,
       child: InkWell(
-          child: ArrivalText(arrivalString: arrivalString),
-          onTap: () {
-            arrivalOnTap(notifier, context);
-          }),
+        child: ArrivalText(arrivalString: arrivalString),
+        onTap: () {
+          arrivalOnTap(notifier, context);
+        },
+      ),
     );
   }
 
@@ -470,19 +494,13 @@ class DestinationState extends State<Destination> {
     notifier.searchType = SearchType.destination;
     showPlacesSearch(context).then((place) {
       notifier.arrival = place;
-      notifier.fetchJourneys(
-        searchDateTime: '',
-        requestType: "arrival",
-      );
+      notifier.fetchJourneys(searchDateTime: '', requestType: "arrival");
     });
   }
 }
 
 class ArrivalText extends StatelessWidget {
-  const ArrivalText({
-    Key? key,
-    required this.arrivalString,
-  }) : super(key: key);
+  const ArrivalText({Key? key, required this.arrivalString}) : super(key: key);
 
   final String? arrivalString;
 
@@ -499,15 +517,17 @@ class ArrivalText extends StatelessWidget {
 }
 
 class EmbossedText extends StatelessWidget {
-  const EmbossedText(this.text,
-      {super.key,
-      this.padBottom = 20,
-      this.padTop = 0,
-      this.padLeft = 20,
-      this.padRight = 20,
-      this.height = 60,
-      this.width = 170.0,
-      this.color = Colors.white});
+  const EmbossedText(
+    this.text, {
+    super.key,
+    this.padBottom = 20,
+    this.padTop = 0,
+    this.padLeft = 20,
+    this.padRight = 20,
+    this.height = 60,
+    this.width = 170.0,
+    this.color = Colors.white,
+  });
   final String text;
   final double padTop;
   final double padBottom;
@@ -521,7 +541,11 @@ class EmbossedText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-          left: padLeft, right: padRight, bottom: padBottom, top: padTop),
+        left: padLeft,
+        right: padRight,
+        bottom: padBottom,
+        top: padTop,
+      ),
       child: SizedBox(
         width: width,
         height: height,
@@ -532,11 +556,8 @@ class EmbossedText extends StatelessWidget {
 }
 
 class MaterialPadText extends StatelessWidget {
-  const MaterialPadText({
-    Key? key,
-    required this.text,
-    required this.color,
-  }) : super(key: key);
+  const MaterialPadText({Key? key, required this.text, required this.color})
+    : super(key: key);
 
   final String text;
   final Color color;
@@ -553,11 +574,8 @@ class MaterialPadText extends StatelessWidget {
 }
 
 class PadText extends StatelessWidget {
-  const PadText({
-    Key? key,
-    required this.text,
-    required this.color,
-  }) : super(key: key);
+  const PadText({Key? key, required this.text, required this.color})
+    : super(key: key);
 
   final String text;
   final Color color;
@@ -577,11 +595,7 @@ class ThirdRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(
-        left: 20,
-        right: 20,
-        bottom: 20,
-      ),
+      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
       child: SizedBox(
         width: double.infinity,
         child: MaterialPadButtonsRow(widgets: widgets),
@@ -591,19 +605,15 @@ class ThirdRow extends StatelessWidget {
 }
 
 class MaterialPadButtonsRow extends StatelessWidget {
-  const MaterialPadButtonsRow({
-    Key? key,
-    required this.widgets,
-  }) : super(key: key);
+  const MaterialPadButtonsRow({Key? key, required this.widgets})
+    : super(key: key);
 
   final List<Widget> widgets;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       elevation: 4,
       color: Theme.of(context).primaryColor,
       child: PaddButtonsRow(widgets: widgets),
@@ -612,10 +622,7 @@ class MaterialPadButtonsRow extends StatelessWidget {
 }
 
 class PaddButtonsRow extends StatelessWidget {
-  const PaddButtonsRow({
-    Key? key,
-    required this.widgets,
-  }) : super(key: key);
+  const PaddButtonsRow({Key? key, required this.widgets}) : super(key: key);
 
   final List<Widget> widgets;
 
@@ -638,31 +645,30 @@ class SwitchArrivalDeparture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<AppStateNotifier>(
-        builder: (context, notifierState, _) => Consumer<DateTimeNotifier>(
-            builder: (context, notifierDT, _) => IconButton(
-                  icon: const Icon(Icons.compare_arrows),
-                  onPressed: () {
-                    onPressSwitchArrivalDeparture(
-                      context,
-                      notifierDT,
-                      notifierState,
-                    );
-                  },
-                )));
+      builder: (context, notifierState, _) => Consumer<DateTimeNotifier>(
+        builder: (context, notifierDT, _) => IconButton(
+          icon: const Icon(Icons.compare_arrows),
+          onPressed: () {
+            onPressSwitchArrivalDeparture(context, notifierDT, notifierState);
+          },
+        ),
+      ),
+    );
   }
 
-  void onPressSwitchArrivalDeparture(BuildContext context,
-      DateTimeNotifier notifierDT, AppStateNotifier notifierState) {
-    final notifierJourney =
-        Provider.of<JourneyNotifier>(context, listen: false);
+  void onPressSwitchArrivalDeparture(
+    BuildContext context,
+    DateTimeNotifier notifierDT,
+    AppStateNotifier notifierState,
+  ) {
+    final notifierJourney = Provider.of<JourneyNotifier>(
+      context,
+      listen: false,
+    );
     Station? dep = notifierJourney.departure;
     notifierJourney.departure = notifierJourney.arrival;
     notifierJourney.arrival = dep;
-    fetchJourneyWithCurrentSettings(
-      notifierJourney,
-      notifierDT,
-      notifierState,
-    );
+    fetchJourneyWithCurrentSettings(notifierJourney, notifierDT, notifierState);
     animationCardNotifier.sink.add(null);
   }
 }
@@ -674,8 +680,10 @@ class SearchTypeSwitcher extends StatelessWidget {
   Widget build(BuildContext context) {
     final notifierState = Provider.of<AppStateNotifier>(context);
     final notifierDT = Provider.of<DateTimeNotifier>(context, listen: false);
-    final notifierJourney =
-        Provider.of<JourneyNotifier>(context, listen: false);
+    final notifierJourney = Provider.of<JourneyNotifier>(
+      context,
+      listen: false,
+    );
     const String partirApres = "Partir après";
     const String arriverAvant = "Arriver avant";
     bool status = notifierState.getSearchDeparture;
@@ -685,15 +693,16 @@ class SearchTypeSwitcher extends StatelessWidget {
     Color colorArriver = colorsPartirArriver[1];
 
     return VisibilitySearchTypeSwitcher(
-        visible: visible,
-        partirApres: partirApres,
-        colorPartir: colorPartir,
-        arriverAvant: arriverAvant,
-        colorArriver: colorArriver,
-        animationCardNotifier: animationCardNotifier,
-        notifierState: notifierState,
-        notifierJourney: notifierJourney,
-        notifierDT: notifierDT);
+      visible: visible,
+      partirApres: partirApres,
+      colorPartir: colorPartir,
+      arriverAvant: arriverAvant,
+      colorArriver: colorArriver,
+      animationCardNotifier: animationCardNotifier,
+      notifierState: notifierState,
+      notifierJourney: notifierJourney,
+      notifierDT: notifierDT,
+    );
   }
 
   List<Color> setColorsPartirArriver(bool status) {
@@ -737,23 +746,28 @@ class VisibilitySearchTypeSwitcher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Visibility(
-        visible: visible,
-        child: InkWell(
-          child: PaddingColumnPartirArriverAvantApres(
-              partirApres: partirApres,
-              colorPartir: colorPartir,
-              arriverAvant: arriverAvant,
-              colorArriver: colorArriver),
-          onTap: () {
-            if (kDebugMode) {
-              print("SearchTypeSwitcher");
-            }
-            animationCardNotifier.sink.add(null);
-            notifierState.switchSearchType();
-            fetchJourneyWithCurrentSettings(
-                notifierJourney, notifierDT, notifierState);
-          },
-        ));
+      visible: visible,
+      child: InkWell(
+        child: PaddingColumnPartirArriverAvantApres(
+          partirApres: partirApres,
+          colorPartir: colorPartir,
+          arriverAvant: arriverAvant,
+          colorArriver: colorArriver,
+        ),
+        onTap: () {
+          if (kDebugMode) {
+            print("SearchTypeSwitcher");
+          }
+          animationCardNotifier.sink.add(null);
+          notifierState.switchSearchType();
+          fetchJourneyWithCurrentSettings(
+            notifierJourney,
+            notifierDT,
+            notifierState,
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -790,10 +804,11 @@ class ArrivalTimePicker extends StatelessWidget {
   const ArrivalTimePicker(this.animationCardNotifier, {super.key});
 
   void onPressArrivalTimePicker(
-      BuildContext context,
-      DateTimeNotifier notifierDT,
-      JourneyNotifier notifierJourney,
-      AppStateNotifier notifierState) {
+    BuildContext context,
+    DateTimeNotifier notifierDT,
+    JourneyNotifier notifierJourney,
+    AppStateNotifier notifierState,
+  ) {
     if (kDebugMode) {
       print("ArrivalTime");
     }
@@ -801,10 +816,7 @@ class ArrivalTimePicker extends StatelessWidget {
       var currentTheme = MyThemes.getThemeFromString(colorString);
       showTimePicker(
         context: context,
-        builder: (context, child) => Theme(
-          data: currentTheme,
-          child: child!,
-        ),
+        builder: (context, child) => Theme(data: currentTheme, child: child!),
         initialTime: TimeOfDay.now(),
       ).then((TimeOfDay? tod) {
         if (tod != null) {
@@ -818,7 +830,12 @@ class ArrivalTimePicker extends StatelessWidget {
             initialDate: today,
             lastDate: DateTime(today.year + 1, today.month, today.day),
             builder: (context, child) => Theme(
-              data: currentTheme,
+              data: currentTheme.copyWith(
+                datePickerTheme: DatePickerThemeData(
+                  backgroundColor: currentTheme.scaffoldBackgroundColor,
+                  surfaceTintColor: Colors.transparent,
+                ),
+              ),
               child: child!,
             ),
           ).then((DateTime? dt) {
@@ -828,7 +845,10 @@ class ArrivalTimePicker extends StatelessWidget {
             notifierDT.arrivalDate = dt;
             animationCardNotifier.sink.add(null);
             fetchJourneyWithCurrentSettings(
-                notifierJourney, notifierDT, notifierState);
+              notifierJourney,
+              notifierDT,
+              notifierState,
+            );
           });
         }
       });
@@ -839,42 +859,51 @@ class ArrivalTimePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final notifierDT = Provider.of<DateTimeNotifier>(context, listen: false);
     final notifierState = Provider.of<AppStateNotifier>(context);
-    final notifierJourney =
-        Provider.of<JourneyNotifier>(context, listen: false);
+    final notifierJourney = Provider.of<JourneyNotifier>(
+      context,
+      listen: false,
+    );
     String displayedDT = setDisplayedDT(notifierDT);
     if (kDebugMode) {
       print("ArrivalTimePicker displayed : $displayedDT");
     }
 
     return Theme(
-        data: Theme.of(context).copyWith(
-          brightness: Brightness.dark,
-          highlightColor: Theme.of(context).primaryColor,
-          buttonTheme: const ButtonThemeData(
-            textTheme: ButtonTextTheme.accent,
-            buttonColor: Colors.white,
-          ),
-          colorScheme: ColorScheme.fromSwatch().copyWith(
-              secondary: Theme.of(context).hoverColor,
-              surface: Theme.of(context).primaryColor),
-          dialogTheme:
-              DialogThemeData(backgroundColor: Theme.of(context).focusColor),
+      data: Theme.of(context).copyWith(
+        brightness: Brightness.dark,
+        highlightColor: Theme.of(context).primaryColor,
+        buttonTheme: const ButtonThemeData(
+          textTheme: ButtonTextTheme.accent,
+          buttonColor: Colors.white,
         ),
-        child: Builder(
-            builder: (context) => InkWell(
-                child: textOrIconDateTime(notifierDT, displayedDT),
-                onTap: () {
-                  onPressArrivalTimePicker(
-                    context,
-                    notifierDT,
-                    notifierJourney,
-                    notifierState,
-                  );
-                })));
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          secondary: Theme.of(context).hoverColor,
+          surface: Theme.of(context).primaryColor,
+        ),
+        dialogTheme: DialogThemeData(
+          backgroundColor: Theme.of(context).focusColor,
+        ),
+      ),
+      child: Builder(
+        builder: (context) => InkWell(
+          child: textOrIconDateTime(notifierDT, displayedDT),
+          onTap: () {
+            onPressArrivalTimePicker(
+              context,
+              notifierDT,
+              notifierJourney,
+              notifierState,
+            );
+          },
+        ),
+      ),
+    );
   }
 
   StatelessWidget textOrIconDateTime(
-      DateTimeNotifier notifierDT, String displayedDT) {
+    DateTimeNotifier notifierDT,
+    String displayedDT,
+  ) {
     if (notifierDT.arrivalDate == null) {
       return const Icon(Icons.access_time, size: 30);
     } else {
@@ -901,24 +930,26 @@ class ResetTimePicker extends StatelessWidget {
     final notifier = Provider.of<DateTimeNotifier>(context, listen: false);
     var visible = notifier.arrivalDate != null;
     return Consumer<AppStateNotifier>(
-        builder: (context, notifierState, _) => Consumer<DateTimeNotifier>(
-            builder: (context, notifierDT, _) => Visibility(
-                  visible: visible,
-                  child: InkWell(
-                    child: IconButton(
-                      icon: const Icon(Icons.cancel),
-                      onPressed: () {
-                        onPressResetTimePicker(
-                          notifierDT,
-                          context,
-                          notifierState,
-                          visible,
-                          notifier,
-                        );
-                      },
-                    ),
-                  ),
-                )));
+      builder: (context, notifierState, _) => Consumer<DateTimeNotifier>(
+        builder: (context, notifierDT, _) => Visibility(
+          visible: visible,
+          child: InkWell(
+            child: IconButton(
+              icon: const Icon(Icons.cancel),
+              onPressed: () {
+                onPressResetTimePicker(
+                  notifierDT,
+                  context,
+                  notifierState,
+                  visible,
+                  notifier,
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   void onPressResetTimePicker(
@@ -929,8 +960,10 @@ class ResetTimePicker extends StatelessWidget {
     DateTimeNotifier notifier,
   ) {
     notifierDT.resetAllDates();
-    JourneyNotifier notifierJourney =
-        Provider.of<JourneyNotifier>(context, listen: false);
+    JourneyNotifier notifierJourney = Provider.of<JourneyNotifier>(
+      context,
+      listen: false,
+    );
     fetchJourneyWithCurrentSettings(notifierJourney, notifierDT, notifierState);
     visible = notifier.arrivalDate != null;
     animationCardNotifier.sink.add(null);
@@ -946,11 +979,7 @@ class ButtonMap extends StatelessWidget {
     return IconButton(
       icon: const Icon(Icons.map),
       onPressed: () {
-        Navigator.pushNamed(
-          context,
-          '/map',
-          arguments: journey,
-        );
+        Navigator.pushNamed(context, '/map', arguments: journey);
       },
     );
   }
