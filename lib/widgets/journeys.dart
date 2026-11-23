@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+
+import 'package:material_ui/material_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,8 +50,9 @@ class FadeJourneyPanelState extends State<FadeJourneyPanel>
     // in case the stream instance changed, subscribe to the new one
     if (widget.shouldTriggerChange != oldWidget.shouldTriggerChange) {
       streamSubscription.cancel();
-      streamSubscription =
-          widget.shouldTriggerChange.listen((_) => someMethod());
+      streamSubscription = widget.shouldTriggerChange.listen(
+        (_) => someMethod(),
+      );
     }
   }
 
@@ -66,34 +68,32 @@ class FadeJourneyPanelState extends State<FadeJourneyPanel>
   void animateRefresh() {
     if (kDebugMode) {
       print(
-          "Fade animation..............................................................................................");
+        "Fade animation..............................................................................................",
+      );
     }
     _controller = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
       animationBehavior: AnimationBehavior.normal,
     );
-    animation = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(
-          0.0,
-          1.0,
-          curve: Curves.easeOutExpo,
-        ),
-      ),
-      // _controller
-    )
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          _controller.reverse();
-        }
-      })
-      ..addListener(() {
-        setState(() {
-          // The state that has changed here is the animation object’s value.
-        });
-      });
+    animation =
+        Tween<double>(begin: 1.0, end: 0.0).animate(
+            CurvedAnimation(
+              parent: _controller,
+              curve: const Interval(0.0, 1.0, curve: Curves.easeOutExpo),
+            ),
+            // _controller
+          )
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              _controller.reverse();
+            }
+          })
+          ..addListener(() {
+            setState(() {
+              // The state that has changed here is the animation object’s value.
+            });
+          });
     _controller.forward();
   }
 
@@ -125,15 +125,17 @@ class JourneyPanel extends StatefulWidget {
 
   @override
   JourneyPanelState createState() => JourneyPanelState(
-      // shouldTriggerChange: shouldTriggerChange, notifyParent: notifyParent
-      );
+    // shouldTriggerChange: shouldTriggerChange, notifyParent: notifyParent
+  );
 }
 
 class JourneyPanelState extends State<JourneyPanel> {
   JourneyPanelState();
   refresh() {
-    final JourneyNotifier journeyNotifier =
-        Provider.of<JourneyNotifier>(context, listen: false);
+    final JourneyNotifier journeyNotifier = Provider.of<JourneyNotifier>(
+      context,
+      listen: false,
+    );
     final String resultRecherche = (journeyNotifier.journeys != null)
         ? "Chargement des trajets"
         : "Aucun trajet trouvé";
@@ -143,44 +145,48 @@ class JourneyPanelState extends State<JourneyPanel> {
     final snackBar = SnackBar(
       duration: Duration(milliseconds: dur),
       backgroundColor: Theme.of(context).hoverColor,
-      content: Text(resultRecherche,
-          style: TextStyle(color: Theme.of(context).primaryColor)),
+      content: Text(
+        resultRecherche,
+        style: TextStyle(color: Theme.of(context).primaryColor),
+      ),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<JourneyNotifier>(builder: (context, notifier, _) {
-      if (notifier.journeys != null) {
-        notifier.journeys!.printConsole();
-        if (kDebugMode) {
-          print("_JourneyPanelState");
+    return Consumer<JourneyNotifier>(
+      builder: (context, notifier, _) {
+        if (notifier.journeys != null) {
+          notifier.journeys!.printConsole();
+          if (kDebugMode) {
+            print("_JourneyPanelState");
+          }
+          return columnJourneyTiles(notifier);
         }
-        return columnJourneyTiles(notifier);
-      }
-      return const ContainerWithTrainEmptyResult();
-    });
+        return const ContainerWithTrainEmptyResult();
+      },
+    );
   }
 
   Column columnJourneyTiles(JourneyNotifier notifier) {
     return Column(
       children: notifier.journeys!.journeyList!
-          .map((s) => JourneyTile(
-                key: UniqueKey(),
-                notifyParent: refresh,
-                shouldTriggerChange: widget.shouldTriggerChange,
-                journey: s,
-              ))
+          .map(
+            (s) => JourneyTile(
+              key: UniqueKey(),
+              notifyParent: refresh,
+              shouldTriggerChange: widget.shouldTriggerChange,
+              journey: s,
+            ),
+          )
           .toList(),
     );
   }
 }
 
 class ContainerWithTrainEmptyResult extends StatelessWidget {
-  const ContainerWithTrainEmptyResult({
-    Key? key,
-  }) : super(key: key);
+  const ContainerWithTrainEmptyResult({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -217,8 +223,9 @@ class JourneyTileState extends State<JourneyTile>
   @override
   void initState() {
     super.initState();
-    streamSubscription =
-        widget.shouldTriggerChange!.listen((_) => someMethod());
+    streamSubscription = widget.shouldTriggerChange!.listen(
+      (_) => someMethod(),
+    );
   }
 
   @override
@@ -227,8 +234,9 @@ class JourneyTileState extends State<JourneyTile>
     // in case the stream instance changed, subscribe to the new one
     if (widget.shouldTriggerChange != oldWidget.shouldTriggerChange) {
       streamSubscription.cancel();
-      streamSubscription =
-          widget.shouldTriggerChange!.listen((_) => someMethod());
+      streamSubscription = widget.shouldTriggerChange!.listen(
+        (_) => someMethod(),
+      );
     }
   }
 
@@ -240,27 +248,26 @@ class JourneyTileState extends State<JourneyTile>
 
   void animateRefresh() {
     controller = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
-    animation = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(
-        parent: controller,
-        curve: const Interval(
-          0.0,
-          1.0,
-          curve: Curves.easeOutExpo,
-        ),
-      ),
-    )
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          controller.reverse();
-        }
-      })
-      ..addListener(() {
-        setState(() {
-          // The state that has changed here is the animation object’s value.
-        });
-      });
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    animation =
+        Tween<double>(begin: 1.0, end: 0.0).animate(
+            CurvedAnimation(
+              parent: controller,
+              curve: const Interval(0.0, 1.0, curve: Curves.easeOutExpo),
+            ),
+          )
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              controller.reverse();
+            }
+          })
+          ..addListener(() {
+            setState(() {
+              // The state that has changed here is the animation object’s value.
+            });
+          });
     controller.forward();
     if (kDebugMode) {
       print("journeytilestate animate refresh ${widget.journey!.departureDT}");
@@ -285,51 +292,56 @@ class JourneyTileState extends State<JourneyTile>
   }
 
   Consumer<JourneyNotifier> buildConsumer() {
-    return Consumer<JourneyNotifier>(builder: (context, notifierJourney, _) {
-      void animateSwipe({required bool left}) {
-        String futureUrl = (left) ? "prev" : "next";
-        notifierJourney.fetchJourneysFromUrl(futureUrl, context);
-        someMethod();
-      }
+    return Consumer<JourneyNotifier>(
+      builder: (context, notifierJourney, _) {
+        void animateSwipe({required bool left}) {
+          String futureUrl = (left) ? "prev" : "next";
+          notifierJourney.fetchJourneysFromUrl(futureUrl, context);
+          someMethod();
+        }
 
-      return GestureDetector(
-        onTap: () {
-          if (kDebugMode) {
-            print("JourneyTile : onTap, visibilitySection $visibilitySection");
-          }
-          animateRefresh();
-          setState(() {});
-          Future.delayed(const Duration(milliseconds: 750), () {
-            // Here you can write your code
-            setState(() {
-              // Here you can write your code for open new view
-              visibilitySection = !visibilitySection;
-            });
-          });
-        },
-        child: Draggable(
-          onDragEnd: (drag) {
-            if (drag.offset.dx > 0) {
-              animateSwipe(left: false);
-            } else if (drag.offset.dx < 0) {
-              animateSwipe(left: true);
+        return GestureDetector(
+          onTap: () {
+            if (kDebugMode) {
+              print(
+                "JourneyTile : onTap, visibilitySection $visibilitySection",
+              );
             }
+            animateRefresh();
+            setState(() {});
+            Future.delayed(const Duration(milliseconds: 750), () {
+              // Here you can write your code
+              setState(() {
+                // Here you can write your code for open new view
+                visibilitySection = !visibilitySection;
+              });
+            });
           },
-          childWhenDragging: Container(),
-          feedback: buildCardPanel(notifierJourney),
-          child: buildCardPanel(notifierJourney),
-        ),
-      );
-    });
+          child: Draggable(
+            onDragEnd: (drag) {
+              if (drag.offset.dx > 0) {
+                animateSwipe(left: false);
+              } else if (drag.offset.dx < 0) {
+                animateSwipe(left: true);
+              }
+            },
+            childWhenDragging: Container(),
+            feedback: buildCardPanel(notifierJourney),
+            child: buildCardPanel(notifierJourney),
+          ),
+        );
+      },
+    );
   }
 
   CardPanel buildCardPanel(JourneyNotifier notifierJourney) {
     return CardPanel(
-        key: _key,
-        animation: animation,
-        journey: widget.journey,
-        visibilitySection: visibilitySection,
-        notifierJourney: notifierJourney);
+      key: _key,
+      animation: animation,
+      journey: widget.journey,
+      visibilitySection: visibilitySection,
+      notifierJourney: notifierJourney,
+    );
   }
 }
 
@@ -373,11 +385,10 @@ class CardPanelState extends State<CardPanel> {
       elevation: 8,
       // color: Theme.of(context).primaryColor,
       color: Theme.of(context).primaryColor,
+      //color: Color(0xFFFF0000),
       margin: const EdgeInsets.fromLTRB(20, 0, 20, 10),
       semanticContainer: false,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       clipBehavior: Clip.none,
       surfaceTintColor: Colors.transparent,
       child: buildCardContent(),
@@ -450,7 +461,9 @@ class CardPanelState extends State<CardPanel> {
         const Padding(padding: EdgeInsets.all(8)),
         PlaceToday(widget.journey),
         PlaceChrono(
-            notifierJourney: widget.notifierJourney, journey: widget.journey),
+          notifierJourney: widget.notifierJourney,
+          journey: widget.journey,
+        ),
         const Padding(padding: EdgeInsets.all(8)),
       ],
     );
@@ -517,48 +530,49 @@ class _FollowButtonState extends State<FollowButton>
   Widget build(BuildContext context) {
     final nofifierFollow = Provider.of<FollowNotifier>(context);
     return GestureDetector(
-        onTap: () {
-          nofifierFollow.setHasFollowedJourney();
-          _controller.forward();
-          Future.delayed(const Duration(milliseconds: 200), () {
-            _controller.reverse();
-          });
-          data.FollowedJourney followedJourney = widget.journey!.toFollowed();
-          String journeyString = followedJourney.encode();
+      onTap: () {
+        nofifierFollow.setHasFollowedJourney();
+        _controller.forward();
+        Future.delayed(const Duration(milliseconds: 200), () {
+          _controller.reverse();
+        });
+        data.FollowedJourney followedJourney = widget.journey!.toFollowed();
+        String journeyString = followedJourney.encode();
 
-          SharedPreferences.getInstance().then(((prefs) {
-            var followedStringList =
-                prefs.getStringList("followedJourney") ?? [];
-            followedStringList.add(journeyString);
-            prefs.setStringList("followedJourney", followedStringList);
-          }));
+        SharedPreferences.getInstance().then(((prefs) {
+          var followedStringList = prefs.getStringList("followedJourney") ?? [];
+          followedStringList.add(journeyString);
+          prefs.setStringList("followedJourney", followedStringList);
+        }));
 
-          var link = widget.journey?.linkThisJourney;
-          if (kDebugMode) {
-            print("pressed follow, link: $link");
-          }
-          Workmanager().registerOneOffTask(
-            "1",
-            follow.watchoutFollow,
-            inputData: <String, dynamic>{
-              "journeyString": journeyString,
-            },
-          );
-        },
-        child: ScaleTransition(
-          scale: Tween<double>(
-            begin: 1.0,
-            end: 3.0,
-          ).animate(_controller),
-          child: Icon(Icons.push_pin_outlined,
-              size: 30 + _controller.value * 25.0),
-        ));
+        var link = widget.journey?.linkThisJourney;
+        if (kDebugMode) {
+          print("pressed follow, link: $link");
+        }
+        Workmanager().registerOneOffTask(
+          "1",
+          follow.watchoutFollow,
+          inputData: <String, dynamic>{"journeyString": journeyString},
+        );
+      },
+      child: ScaleTransition(
+        scale: Tween<double>(begin: 1.0, end: 3.0).animate(_controller),
+        child: Icon(
+          Icons.push_pin_outlined,
+          size: 30 + _controller.value * 25.0,
+        ),
+      ),
+    );
   }
 }
 
 class PlaceDestination extends StatelessWidget {
-  const PlaceDestination(this.journey, this.destDatetime, this.destText,
-      {super.key});
+  const PlaceDestination(
+    this.journey,
+    this.destDatetime,
+    this.destText, {
+    super.key,
+  });
   final data.Journey? journey;
   final DateTime destDatetime;
   final String? destText;
@@ -577,9 +591,7 @@ class PlaceDestination extends StatelessWidget {
             color: Colors.white,
             fontSize: 22,
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-          ),
+          const Padding(padding: EdgeInsets.symmetric(horizontal: 15)),
           PlaceName(destText, color: Colors.white54, wrap: 25),
         ],
       ),
@@ -610,11 +622,7 @@ class PlaceArrival extends StatelessWidget {
 class PlaceChrono extends StatefulWidget {
   final data.Journey? journey;
   final JourneyNotifier? notifierJourney;
-  const PlaceChrono({
-    super.key,
-    this.notifierJourney,
-    this.journey,
-  });
+  const PlaceChrono({super.key, this.notifierJourney, this.journey});
 
   @override
   PlaceChronoState createState() => PlaceChronoState();
@@ -637,8 +645,9 @@ class PlaceChronoState extends State<PlaceChrono> {
   void _getTime() {
     setState(() {
       _chronoArrival = widget.journey!.arrivalDT!.difference(DateTime.now());
-      _chronoDeparture =
-          widget.journey!.departureDT!.difference(DateTime.now());
+      _chronoDeparture = widget.journey!.departureDT!.difference(
+        DateTime.now(),
+      );
       _displayedChrono = _formatChrono(_chronoDeparture, _chronoArrival);
       _visible =
           dateWidgetFormater(widget.journey!.arrivalDT!) == "Aujourd'hui";
@@ -651,8 +660,9 @@ class PlaceChronoState extends State<PlaceChrono> {
       return '';
     }
     // on choisit quel chrono afficher
-    Duration chrono =
-        (chronoDeparture!.isNegative) ? chronoArrival : chronoDeparture;
+    Duration chrono = (chronoDeparture!.isNegative)
+        ? chronoArrival
+        : chronoDeparture;
     int days = chrono.inDays.abs();
     int hours = chrono.inHours.abs();
     int min = chrono.inMinutes.abs();
@@ -661,7 +671,11 @@ class PlaceChronoState extends State<PlaceChrono> {
   }
 
   String _chronoTextFormater(
-      Duration chronoDeparture, int days, int hours, int min) {
+    Duration chronoDeparture,
+    int days,
+    int hours,
+    int min,
+  ) {
     String text = (chronoDeparture.isNegative) ? "Arrivée : " : "Départ : ";
     if (days > 0) {
       text = "$days jours, ";
@@ -699,11 +713,7 @@ class PlaceChronoState extends State<PlaceChrono> {
   Widget build(BuildContext context) {
     return Visibility(
       visible: _visible,
-      child: PlaceName(
-        _displayedChrono,
-        wrap: 26,
-        fontSize: 16,
-      ),
+      child: PlaceName(_displayedChrono, wrap: 26, fontSize: 16),
     );
   }
 }
@@ -715,9 +725,12 @@ class PlaceToday extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Visibility(
-        visible: dateWidgetFormater(journey!.arrivalDT!) != "Aujourd'hui",
-        child: PlaceName(dateWidgetFormater(journey!.arrivalDT!),
-            color: Colors.white54));
+      visible: dateWidgetFormater(journey!.arrivalDT!) != "Aujourd'hui",
+      child: PlaceName(
+        dateWidgetFormater(journey!.arrivalDT!),
+        color: Colors.white54,
+      ),
+    );
   }
 }
 
@@ -733,10 +746,7 @@ class PlaceDuration extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const Icon(
-            Icons.timer,
-            color: Colors.white54,
-          ),
+          const Icon(Icons.timer, color: Colors.white54),
           PlaceName(" ${strDuration(journey!.duration!)}"),
         ],
       ),
@@ -791,10 +801,8 @@ class PlaceDisruptionStart extends StatelessWidget {
 }
 
 class PlaceDisruptionText extends StatelessWidget {
-  const PlaceDisruptionText({
-    Key? key,
-    required this.disruptionText,
-  }) : super(key: key);
+  const PlaceDisruptionText({Key? key, required this.disruptionText})
+    : super(key: key);
 
   final List<Widget> disruptionText;
 
@@ -821,17 +829,16 @@ class PlaceDisruptionEnd extends StatelessWidget {
 
     if (journey.disruption!.isDisruptionEndDisplayable()) {
       return PlaceDisruptionText(
-          disruptionText: [PlaceName(journey.disruption!.motifEnd())]);
+        disruptionText: [PlaceName(journey.disruption!.motifEnd())],
+      );
     }
     return Container();
   }
 }
 
 class DisruptionEndText extends StatelessWidget {
-  const DisruptionEndText({
-    Key? key,
-    required this.disruptionText,
-  }) : super(key: key);
+  const DisruptionEndText({Key? key, required this.disruptionText})
+    : super(key: key);
 
   final List<Widget> disruptionText;
 
@@ -856,7 +863,8 @@ class PlaceDisruptions extends StatelessWidget {
   Widget build(BuildContext context) {
     if (kDebugMode) {
       print(
-          "DISRUPTIONS journey.disruptionNumber ${journey.disruption!.disruptionNumber}");
+        "DISRUPTIONS journey.disruptionNumber ${journey.disruption!.disruptionNumber}",
+      );
       print(journey.disruption!.endDisrupted);
       print(journey.disruption!.causeDisruptionStart);
       print(journey.disruption!.causeDisruptionEnd);
@@ -898,10 +906,7 @@ class PlaceDisruptions extends StatelessWidget {
 }
 
 class DisruptionTo extends StatelessWidget {
-  const DisruptionTo({
-    Key? key,
-    required this.journey,
-  }) : super(key: key);
+  const DisruptionTo({Key? key, required this.journey}) : super(key: key);
 
   final data.Journeys journey;
 
@@ -913,17 +918,15 @@ class DisruptionTo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         PlaceName(
-            "Arrivée : ${journey.disruption!.causeDisruptionEnd}, retard ${journey.disruption!.delayEnd}"),
+          "Arrivée : ${journey.disruption!.causeDisruptionEnd}, retard ${journey.disruption!.delayEnd}",
+        ),
       ],
     );
   }
 }
 
 class DisruptionFrom extends StatelessWidget {
-  const DisruptionFrom({
-    Key? key,
-    required this.journey,
-  }) : super(key: key);
+  const DisruptionFrom({Key? key, required this.journey}) : super(key: key);
 
   final data.Journeys journey;
 
@@ -935,18 +938,21 @@ class DisruptionFrom extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         PlaceName(
-            "Départ : ${journey.disruption!.causeDisruptionStart}, retard ${journey.disruption!.delayStart}"),
+          "Départ : ${journey.disruption!.causeDisruptionStart}, retard ${journey.disruption!.delayStart}",
+        ),
       ],
     );
   }
 }
 
 class PlaceName extends StatelessWidget {
-  const PlaceName(this.name,
-      {super.key,
-      this.color = Colors.white,
-      this.fontSize = 18,
-      this.wrap = 32});
+  const PlaceName(
+    this.name, {
+    super.key,
+    this.color = Colors.white,
+    this.fontSize = 18,
+    this.wrap = 32,
+  });
   final Color color;
   final double fontSize;
   final String? name;
@@ -976,16 +982,16 @@ class SectionColumnState extends State<SectionColumn> {
   SectionColumnState();
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      const Padding(
-        padding: EdgeInsets.all(8),
-      ),
-      ...[for (var sect in widget.journey!.sectionList!) Leg(sect)],
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: childrenColumnState(),
-      ),
-    ]);
+    return Column(
+      children: [
+        const Padding(padding: EdgeInsets.all(8)),
+        ...[for (var sect in widget.journey!.sectionList!) Leg(sect)],
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: childrenColumnState(),
+        ),
+      ],
+    );
   }
 
   List<Widget> childrenColumnState() {
@@ -998,10 +1004,7 @@ class SectionColumnState extends State<SectionColumn> {
 }
 
 class ScheduleButton extends StatelessWidget {
-  const ScheduleButton({
-    Key? key,
-    required this.journey,
-  }) : super(key: key);
+  const ScheduleButton({Key? key, required this.journey}) : super(key: key);
 
   final data.Journey? journey;
 
@@ -1036,9 +1039,7 @@ class LegState extends State<Leg> {
     }
 
     return GestureDetector(
-      child: Column(
-        children: childrenVisibilityFrom(),
-      ),
+      child: Column(children: childrenVisibilityFrom()),
       onTap: () {
         setState(setVisible);
       },
@@ -1050,7 +1051,9 @@ class LegState extends State<Leg> {
       PlaceName('${widget.section.from!.name}'),
       RowDepartureDetail(section: widget.section),
       VisibilityDepartureDetail(
-          sectionVisible: sectionVisible, section: widget.section)
+        sectionVisible: sectionVisible,
+        section: widget.section,
+      ),
     ];
   }
 }
@@ -1069,32 +1072,23 @@ class VisibilityDepartureDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Visibility(
       visible: sectionVisible,
-      child: Column(
-        children: childrenDepartureDetail(),
-      ),
+      child: Column(children: childrenDepartureDetail()),
     );
   }
 
   List<Widget> childrenDepartureDetail() {
     return <Widget>[
       TableInfoSection(section: section),
-      const Padding(
-        padding: EdgeInsets.all(5.0),
-      ),
+      const Padding(padding: EdgeInsets.all(5.0)),
       const Text("Arrêts :"),
-      const Padding(
-        padding: EdgeInsets.all(5.0),
-      ),
+      const Padding(padding: EdgeInsets.all(5.0)),
       StopTable(section),
     ];
   }
 }
 
 class RowDepartureDetail extends StatelessWidget {
-  const RowDepartureDetail({
-    Key? key,
-    required this.section,
-  }) : super(key: key);
+  const RowDepartureDetail({Key? key, required this.section}) : super(key: key);
 
   final data.Section section;
 
@@ -1103,28 +1097,16 @@ class RowDepartureDetail extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        PlaceName(
-          prettyTime(section.from!.departureTime!),
-          fontSize: 16,
-        ),
-        const Padding(
-          padding: EdgeInsets.all(5),
-          child: Icon(Icons.train),
-        ),
-        PlaceName(
-          prettyTime(section.toStation!.departureTime!),
-          fontSize: 16,
-        ),
+        PlaceName(prettyTime(section.from!.departureTime!), fontSize: 16),
+        const Padding(padding: EdgeInsets.all(5), child: Icon(Icons.train)),
+        PlaceName(prettyTime(section.toStation!.departureTime!), fontSize: 16),
       ],
     );
   }
 }
 
 class TableInfoSection extends StatelessWidget {
-  const TableInfoSection({
-    Key? key,
-    required this.section,
-  }) : super(key: key);
+  const TableInfoSection({Key? key, required this.section}) : super(key: key);
 
   final data.Section section;
 
@@ -1136,8 +1118,10 @@ class TableInfoSection extends StatelessWidget {
         rowDetail("Durée : ", strDuration(section.duration!, long: true)),
         rowDetail("Direction", section.displayInformation!.direction!),
         rowDetail("Ligne : ", section.displayInformation!.label!),
-        rowDetail("${section.displayInformation!.commercialMode}",
-            "n° : ${section.displayInformation!.headsign}"),
+        rowDetail(
+          "${section.displayInformation!.commercialMode}",
+          "n° : ${section.displayInformation!.headsign}",
+        ),
       ],
     );
   }
@@ -1145,11 +1129,13 @@ class TableInfoSection extends StatelessWidget {
   TableRow rowDetail(String textKey, String textValue) {
     var textStyle54 = const TextStyle(color: Colors.white54);
     var edgeInsets4 = const EdgeInsets.all(4);
-    return TableRow(children: [
-      Text(textKey, style: textStyle54),
-      Padding(padding: edgeInsets4),
-      Text(textValue),
-    ]);
+    return TableRow(
+      children: [
+        Text(textKey, style: textStyle54),
+        Padding(padding: edgeInsets4),
+        Text(textValue),
+      ],
+    );
   }
 }
 
@@ -1165,20 +1151,22 @@ class StopTable extends StatelessWidget {
       child: Table(
         defaultColumnWidth: const IntrinsicColumnWidth(),
         children: [
-          ...[for (var stop in section.stops!.stops!) buildTableRow(stop)]
+          ...[for (var stop in section.stops!.stops!) buildTableRow(stop)],
         ],
       ),
     );
   }
 
   TableRow buildTableRow(data.Station stop) {
-    return TableRow(children: [
-      Text(
-        DateFormat(formatTODAPIWidget).format(stop.departureTime!),
-      ),
-      const Padding(padding: EdgeInsets.all(6)),
-      Text(wrapLongText(stop.name!, 40),
-          style: const TextStyle(color: Colors.white54)),
-    ]);
+    return TableRow(
+      children: [
+        Text(DateFormat(formatTODAPIWidget).format(stop.departureTime!)),
+        const Padding(padding: EdgeInsets.all(6)),
+        Text(
+          wrapLongText(stop.name!, 40),
+          style: const TextStyle(color: Colors.white54),
+        ),
+      ],
+    );
   }
 }
