@@ -1,4 +1,4 @@
-package com.example.depart_pub
+package com.example.depart
 
 import io.flutter.embedding.android.FlutterActivity
 
